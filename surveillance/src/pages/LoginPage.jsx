@@ -1,7 +1,7 @@
 import firebaseService from "../firebase/fAuth";
 import React, { useEffect, useState } from "react";
 import '../assets/styles/LoginPage.css';
-import logoNav from "../assets/imagens/smartrural_logo_named_white.png";
+import logoNav from "../assets/imagens/smartrural_logo_named_white_peixe.svg";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
