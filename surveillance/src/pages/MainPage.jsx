@@ -18,14 +18,14 @@ const MainPage = () => {
         const fetchData = async () => {
             try {
                 // Dados do firebase
-                const resultado = await firebaseService.getDatabaseInfo();
-                setFirebaseData(resultado);
+                const firebaseRootStructure = await firebaseService.getDatabaseInfo();
+                setFirebaseData(firebaseRootStructure);
 
                 // Extraindo asset_ids
                 const assetsOvonovo = [];
                 const assetsOasis = [];
 
-                Object.values(resultado.propriedades).forEach(propriedade => {
+                Object.values(firebaseRootStructure.propriedades).forEach(propriedade => {
                     const tipo = propriedade.nome;
 
                     Object.keys(propriedade.unidadesProdutivas).forEach(assetId => {
@@ -42,8 +42,8 @@ const MainPage = () => {
 
                 // Token JWT de autenticação do Thingsboard
                 const corpo = {
-                    username: resultado.thingsboardCredentials.username,
-                    password: resultado.thingsboardCredentials.password
+                    username: firebaseRootStructure.thingsboardCredentials.username,
+                    password: firebaseRootStructure.thingsboardCredentials.password
                 };
 
                 const authResponse = await fetch('https://thingsboard.cloud/api/auth/login', {
@@ -78,8 +78,24 @@ const MainPage = () => {
                 const attributesResponsesOvonovo = await Promise.all(attributeRequestsOvonovo);
                 const attributesResponsesOasis = await Promise.all(attributeRequestsOasis);
 
+                const [unidadeProdutivaOvonovo1, unidadeProdutivaOvonovo2, unidadeProdutivaOvonovo3] = attributesResponsesOvonovo;
+                const [unidadeProdutivaOasis1, unidadeProdutivaOasis2, unidadeProdutivaOasis3] = attributesResponsesOasis;
+                console.log(unidadeProdutivaOvonovo1,unidadeProdutivaOvonovo2);
+
+
                 console.log('Attributes Ovonovo:', attributesResponsesOvonovo);
                 console.log('Attributes Oasis:', attributesResponsesOasis);
+
+                const upsOvonovo = attributesResponsesOvonovo.map(unit => {
+                    // Para cada unidade produtiva, cria um objeto com as chaves e valores correspondentes
+                    return unit.reduce((acc, curr) => {
+                      acc[curr.key] = curr.value;
+                      return acc;
+                    }, {});
+                  });
+                  
+                  console.log(upsOvonovo);
+                  
 
 
             } catch (err) {
