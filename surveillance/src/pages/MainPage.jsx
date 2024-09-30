@@ -46,6 +46,25 @@ const MainPage = () => {
                 console.log('assets ovonovo:', assetsOvonovo);
                 console.log('assets oasis:', assetsOasis);
 
+                const devicesOvonovo = {};
+                const devicesOasis = {};
+
+
+                Object.values(firebaseRootStructure.propriedades).forEach(propriedade => {
+                    if (propriedade.nome === 'ovonovo') {
+                      Object.values(propriedade.unidadesProdutivas).forEach(unidade => {
+                        devicesOvonovo[unidade.nome] = Object.values(unidade.dispositivos);
+                      });
+                    } else if (propriedade.nome === 'oasis') {
+                      Object.values(propriedade.unidadesProdutivas).forEach(unidade => {
+                        devicesOasis[unidade.nome] = Object.values(unidade.dispositivos);
+                      });
+                    }
+                  });
+                  
+                  console.log('Devices Ovonovo:', devicesOvonovo);
+                  console.log('Devices Oasis:', devicesOasis);
+
                 // Token JWT de autenticação do Thingsboard
                 const corpo = {
                     username: firebaseRootStructure.thingsboardCredentials.username,
@@ -83,14 +102,14 @@ const MainPage = () => {
 
                 const attributesResponsesOvonovo = await Promise.all(attributeRequestsOvonovo);
                 const attributesResponsesOasis = await Promise.all(attributeRequestsOasis);
-                console.log('atributos ovonovo:',attributesResponsesOvonovo);
-                console.log('atributos oasis:',attributesResponsesOasis);
+                console.log('atributos ovonovo:', attributesResponsesOvonovo);
+                console.log('atributos oasis:', attributesResponsesOasis);
                 setAov(attributesResponsesOvonovo);
                 setAoa(attributesResponsesOasis);
 
                 const [unidadeProdutivaOvonovo1, unidadeProdutivaOvonovo2, unidadeProdutivaOvonovo3] = attributesResponsesOvonovo;
                 const [unidadeProdutivaOasis1, unidadeProdutivaOasis2, unidadeProdutivaOasis3] = attributesResponsesOasis;
-                console.log('unidade produtiva ovonovo 1,2:',unidadeProdutivaOvonovo1,unidadeProdutivaOvonovo2);
+                console.log('unidade produtiva ovonovo 1,2:', unidadeProdutivaOvonovo1, unidadeProdutivaOvonovo2);
 
 
                 console.log('Attributes Ovonovo:', attributesResponsesOvonovo);
@@ -99,13 +118,66 @@ const MainPage = () => {
                 const upsOvonovo = attributesResponsesOvonovo.map(unit => {
                     // Para cada unidade produtiva, cria um objeto com as chaves e valores correspondentes
                     return unit.reduce((acc, curr) => {
-                      acc[curr.key] = curr.value;
-                      return acc;
+                        acc[curr.key] = curr.value;
+                        return acc;
                     }, {});
+                });
+
+                console.log(upsOvonovo);
+
+                const telemetryDataOvonovo = {};
+                const telemetryDataOasis = {};
+                console.log(Object.entries(devicesOvonovo));
+                
+                // Function to fetch telemetry data for Ovonovo devices
+                const fetchTelemetryForDevice = async (deviceId, unidade) => {
+                  const response = await fetch(`https://thingsboard.cloud/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries`, {
+                    method: 'GET',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                    }
                   });
-                  
-                  console.log(upsOvonovo);
-                  
+                  const data = await response.json();
+                  if (!telemetryDataOvonovo[unidade]) {
+                    telemetryDataOvonovo[unidade] = [];
+                  }
+                  telemetryDataOvonovo[unidade].push({ deviceId, data });
+                };
+                
+            
+                const fetchTelemetryForOasisDevice = async (deviceId, unidade) => {
+                  const response = await fetch(`https://thingsboard.cloud/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries`, {
+                    method: 'GET',
+                    headers: {
+                      'Content-Type': 'application/json',
+                      'Authorization': `Bearer ${token}`
+                    }
+                  });
+                  const data = await response.json();
+                  if (!telemetryDataOasis[unidade]) {
+                    telemetryDataOasis[unidade] = [];
+                  }
+                  telemetryDataOasis[unidade].push({ deviceId, data });
+                };
+                
+
+                const fetchAllTelemetryData = async () => {
+                  for (const [unidade, deviceIds] of Object.entries(devicesOvonovo)) {
+                    const fetchPromises = deviceIds.map(deviceId => fetchTelemetryForDevice(deviceId, unidade));
+                    await Promise.all(fetchPromises);
+                  }
+                
+                  for (const [unidade, deviceIds] of Object.entries(devicesOasis)) {
+                    const fetchPromises = deviceIds.map(deviceId => fetchTelemetryForOasisDevice(deviceId, unidade));
+                    await Promise.all(fetchPromises);
+                  }
+                };
+                
+                fetchAllTelemetryData().catch(console.error);
+
+                console.log('Telemetry Data Ovonovo:', telemetryDataOvonovo);
+                console.log('Telemetry Data Oasis:', telemetryDataOasis);
 
 
             } catch (err) {
@@ -137,22 +209,22 @@ const MainPage = () => {
 
     return (
         <div className='container-xl'>
-            <HeaderOvonovo/>
+            <HeaderOvonovo />
             <div className='cards'>
-            {aov.map((unidadeProdutiva, index) => (
-                <div className='card2'>
-                <Card key={index} unidadeProdutiva={unidadeProdutiva} />
-                </div>
-            ))}
+                {aov.map((unidadeProdutiva, index) => (
+                    <div className='card2'>
+                        <Card key={index} unidadeProdutiva={unidadeProdutiva} />
+                    </div>
+                ))}
             </div>
             <p></p>
             <HeaderOasis />
             <div className='cards'>
-            {aoa.map((unidadeProdutiva, index) => (
-                <div className='card2'>
-                <Card key={index} unidadeProdutiva={unidadeProdutiva} />
-                </div>
-            ))}
+                {aoa.map((unidadeProdutiva, index) => (
+                    <div className='card2'>
+                        <Card key={index} unidadeProdutiva={unidadeProdutiva} />
+                    </div>
+                ))}
             </div>
         </div>
     );
