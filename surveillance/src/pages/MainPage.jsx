@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import useLogout from '../scripts/logoutScript';
 import firebaseService from '../firebase/fAuth';
 import loadingGif from '../assets/imagens/loading.gif';
+import HeaderOvonovo from '../components/HeaderOvonovo';
+import HeaderOasis from '../components/HeaderOasis';
+import Card from '../components/Card';
 
 const MainPage = () => {
     const [firebaseDataStructure, setFirebaseData] = useState({});
@@ -11,6 +14,9 @@ const MainPage = () => {
     const [authToken, setAuthToken] = useState('');
     const [dashboardIds, setDashboardIds] = useState([]); //não usar esses 3 states
     const [assetIds, setAssetIds] = useState([]);
+
+    const [aov, setAov] = useState([]);
+    const [aoa, setAoa] = useState([]);
     //useLogout();
 
     //Requisição dos dados do firebase
@@ -37,8 +43,8 @@ const MainPage = () => {
                     });
                 });
 
-                console.log(assetsOvonovo);
-                console.log(assetsOasis);
+                console.log('assets ovonovo:', assetsOvonovo);
+                console.log('assets oasis:', assetsOasis);
 
                 // Token JWT de autenticação do Thingsboard
                 const corpo = {
@@ -77,10 +83,14 @@ const MainPage = () => {
 
                 const attributesResponsesOvonovo = await Promise.all(attributeRequestsOvonovo);
                 const attributesResponsesOasis = await Promise.all(attributeRequestsOasis);
+                console.log('atributos ovonovo:',attributesResponsesOvonovo);
+                console.log('atributos oasis:',attributesResponsesOasis);
+                setAov(attributesResponsesOvonovo);
+                setAoa(attributesResponsesOasis);
 
                 const [unidadeProdutivaOvonovo1, unidadeProdutivaOvonovo2, unidadeProdutivaOvonovo3] = attributesResponsesOvonovo;
                 const [unidadeProdutivaOasis1, unidadeProdutivaOasis2, unidadeProdutivaOasis3] = attributesResponsesOasis;
-                console.log(unidadeProdutivaOvonovo1,unidadeProdutivaOvonovo2);
+                console.log('unidade produtiva ovonovo 1,2:',unidadeProdutivaOvonovo1,unidadeProdutivaOvonovo2);
 
 
                 console.log('Attributes Ovonovo:', attributesResponsesOvonovo);
@@ -127,10 +137,22 @@ const MainPage = () => {
 
     return (
         <div className='container-xl'>
-            <div className='row'>
-                <div className='col'>
-                   {/* <Fileira props={data.propriedades} /> */}
+            <HeaderOvonovo/>
+            <div className='cards'>
+            {aov.map((unidadeProdutiva, index) => (
+                <div className='card2'>
+                <Card key={index} unidadeProdutiva={unidadeProdutiva} />
                 </div>
+            ))}
+            </div>
+            <p></p>
+            <HeaderOasis />
+            <div className='cards'>
+            {aoa.map((unidadeProdutiva, index) => (
+                <div className='card2'>
+                <Card key={index} unidadeProdutiva={unidadeProdutiva} />
+                </div>
+            ))}
             </div>
         </div>
     );

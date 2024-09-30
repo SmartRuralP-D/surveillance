@@ -1,0 +1,15 @@
+.horizontal-card {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center; 
+    max-height: 150px;
+    width: auto;
+    gap: 100px;
+    border: 2px solid #000;
+    border-radius: 8px;
+}
+
+.titulo{
+    margin-top: 20px;
+}

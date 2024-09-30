@@ -15,64 +15,26 @@ const logoMap = {
     ovonovo: logoSmartFrangoBranco,
     oasis: logoSmartPeixeBranco,
     // possibilita adicionar mais tipos de propriedades e ícones sem mudar a lógica de exibição.
-  };
+};
 
 const iconeMap = {
-    chicken : poultry,
-    fish : iconePeixe
+    chicken: poultry,
+    fish: iconePeixe
 };
-  
 
-const Exibicao = (dataStructure) =>{
 
-    const getPropriedadesPorTipo = (nome) =>{
-        return Object.values(dataStructure.propriedades).filter((propriedade) => propriedade.nome === nome);
-    }
 
-    const propriedadesOvonovo = getPropriedadesPorTipo('ovonovo');
-    const propriedadesOasis = getPropriedadesPorTipo('oasis');
 
-    const Header = (property) => {
-        const tipo = property.nome;
-        const imageSrc = logoMap[tipo] || iconePadrao; // Imagem padrão se o tipo não for encontrado
+const unidadeProdutiva = (unidadeProdutiva) => {
+    return (
+        <div className='container'>
+            <h1 className='nome'>{unidadeProdutiva.nome}</h1>
+            <img src={unidadeProdutiva.cultivo === 'chicken' ? poultry : iconePeixe}/>
+                <div className='parametros'>
 
-        return(
-            <div className="container-md">
-                <div className="horizontal-card">
-                    <img className="card-image" src={imageSrc} alt={`logo-${tipo}`} />
-                    <img className='card-image' src={tipo === 'ovonovo' ? imagemOvonovo : imagemOasis} alt={`imagem-${tipo}`}/>
-                    <img className='card-image' src={tipo === 'ovonovo' ? logoSmartFrangoPreto : logoSmartPeixePreto} alt={`ilustração-${tipo}`}/>
                 </div>
-            </div>
-        );
-    }
-
-    const Card = (unidadeProdutiva) => {
-        const cultivo = unidadeProdutiva.cultivo;
-        const iconSrc = iconeMap[cultivo] || iconePadrao;
-
-        return(
-            <div className='container-md'>
-                <h1 className='nome'>{unidadeProdutiva.nome}</h1>
-                    <div className='row'>
-                        <img className='card-image' src={iconSrc} alt={`icone-${cultivo}`}/>
-                        <div className='informacoes'>
-
-                        </div>
-                    </div>
-            </div>
-        )
-    }
-
-    return(
-        <div className="container-md">
-            <Header property = {propriedadesOvonovo[0]}/>
-            <div className="row">
-                
-            </div>
         </div>
-    );
-};
+    )
 
-
-export default Exibicao;
+}
+export default unidadeProdutiva;
