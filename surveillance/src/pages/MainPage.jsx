@@ -6,14 +6,14 @@ import loadingGif from '../assets/imagens/loading.gif';
 import HeaderOvonovo from '../components/HeaderOvonovo';
 import HeaderOasis from '../components/HeaderOasis';
 import Card from '../components/Card';
+import getAssetIds from '../scripts/getAssetIds';
+import getDeviceIds from '../scripts/getDeviceIds';
+import getThingsBoardJwt from '../scripts/getThingsBoardJwt';
 
 const MainPage = () => {
     const [firebaseDataStructure, setFirebaseData] = useState({});
-    const [error, setError] = useState(null);
-
     const [authToken, setAuthToken] = useState('');
-    const [dashboardIds, setDashboardIds] = useState([]); //não usar esses 3 states
-    const [assetIds, setAssetIds] = useState([]);
+    const [error, setError] = useState(null);
 
     const [aov, setAov] = useState([]);
     const [aoa, setAoa] = useState([]);
@@ -27,62 +27,16 @@ const MainPage = () => {
                 const firebaseRootStructure = await firebaseService.getDatabaseInfo();
                 setFirebaseData(firebaseRootStructure);
 
-                // Extraindo asset_ids
-                const assetsOvonovo = [];
-                const assetsOasis = [];
-
-                Object.values(firebaseRootStructure.propriedades).forEach(propriedade => {
-                    const tipo = propriedade.nome;
-
-                    Object.keys(propriedade.unidadesProdutivas).forEach(assetId => {
-                        if (tipo === 'ovonovo') {
-                            assetsOvonovo.push(assetId);
-                        } else if (tipo === 'oasis') {
-                            assetsOasis.push(assetId);
-                        }
-                    });
-                });
-
-                console.log('assets ovonovo:', assetsOvonovo);
-                console.log('assets oasis:', assetsOasis);
-
-                const devicesOvonovo = {};
-                const devicesOasis = {};
-
-
-                Object.values(firebaseRootStructure.propriedades).forEach(propriedade => {
-                    if (propriedade.nome === 'ovonovo') {
-                      Object.values(propriedade.unidadesProdutivas).forEach(unidade => {
-                        devicesOvonovo[unidade.nome] = Object.values(unidade.dispositivos);
-                      });
-                    } else if (propriedade.nome === 'oasis') {
-                      Object.values(propriedade.unidadesProdutivas).forEach(unidade => {
-                        devicesOasis[unidade.nome] = Object.values(unidade.dispositivos);
-                      });
-                    }
-                  });
-                  
-                  console.log('Devices Ovonovo:', devicesOvonovo);
-                  console.log('Devices Oasis:', devicesOasis);
-
-                // Token JWT de autenticação do Thingsboard
-                const corpo = {
-                    username: firebaseRootStructure.thingsboardCredentials.username,
-                    password: firebaseRootStructure.thingsboardCredentials.password
-                };
-
-                const authResponse = await fetch('https://thingsboard.cloud/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(corpo)
-                });
-                const authResult = await authResponse.json();
-                const token = authResult.token;
+                const [idsAssetsOvonovo, idAssetsOasis ]= getAssetIds(firebaseRootStructure);
+                const {idsDevicesOvonovo, idsDevicesOasis} = getDeviceIds(firebaseRootStructure);
+                console.log(idsAssetsOvonovo,idAssetsOasis);
+                console.log(idsDevicesOvonovo,idsDevicesOasis);
+                const token = await getThingsBoardJwt(firebaseRootStructure);
                 setAuthToken(token);
 
                 // Requisições para atributos dos assets
-
-                const attributeRequestsOvonovo = assetsOvonovo.map(assetId =>
+// desnecessário no momento ------------------------------------------------------------------------------------------------
+                const attributeRequestsOvonovo = idsAssetsOvonovo.map(assetId =>
                     fetch(`https://thingsboard.cloud/api/plugins/telemetry/ASSET/${assetId}/values/attributes/SERVER_SCOPE`, {
                         headers: {
                             'accept': 'application/json',
@@ -91,7 +45,7 @@ const MainPage = () => {
                     }).then(response => response.json())
                 );
 
-                const attributeRequestsOasis = assetsOasis.map(assetId =>
+                const attributeRequestsOasis = idAssetsOasis.map(assetId =>
                     fetch(`https://thingsboard.cloud/api/plugins/telemetry/ASSET/${assetId}/values/attributes/SERVER_SCOPE`, {
                         headers: {
                             'accept': 'application/json',
@@ -122,14 +76,18 @@ const MainPage = () => {
                         return acc;
                     }, {});
                 });
-
+                
                 console.log(upsOvonovo);
+               
+//---------------------------------------------------------------------------------------------------------------------------
 
+                //extraindo do tb timeseries data dos sensores(devices)
                 const telemetryDataOvonovo = {};
                 const telemetryDataOasis = {};
-                console.log(Object.entries(devicesOvonovo));
+                console.log("c");
+                console.log(idsDevicesOvonovo);
                 
-                // Function to fetch telemetry data for Ovonovo devices
+                // Função para fetch telemetry data de Ovonovo devices
                 const fetchTelemetryForDevice = async (deviceId, unidade) => {
                   const response = await fetch(`https://thingsboard.cloud/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries`, {
                     method: 'GET',
@@ -145,7 +103,7 @@ const MainPage = () => {
                   telemetryDataOvonovo[unidade].push({ deviceId, data });
                 };
                 
-            
+            // Função para fetch telemetry data de Oasis devices
                 const fetchTelemetryForOasisDevice = async (deviceId, unidade) => {
                   const response = await fetch(`https://thingsboard.cloud/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries`, {
                     method: 'GET',
@@ -161,19 +119,20 @@ const MainPage = () => {
                   telemetryDataOasis[unidade].push({ deviceId, data });
                 };
                 
-
+                //define o procedimento para executar as duas funções nas respectivas unidades e devices
                 const fetchAllTelemetryData = async () => {
-                  for (const [unidade, deviceIds] of Object.entries(devicesOvonovo)) {
+                  for (const [unidade, deviceIds] of Object.entries(idsDevicesOvonovo)) {
                     const fetchPromises = deviceIds.map(deviceId => fetchTelemetryForDevice(deviceId, unidade));
                     await Promise.all(fetchPromises);
                   }
                 
-                  for (const [unidade, deviceIds] of Object.entries(devicesOasis)) {
+                  for (const [unidade, deviceIds] of Object.entries(idsDevicesOasis)) {
                     const fetchPromises = deviceIds.map(deviceId => fetchTelemetryForOasisDevice(deviceId, unidade));
                     await Promise.all(fetchPromises);
                   }
                 };
                 
+                // chama o procedimento
                 fetchAllTelemetryData().catch(console.error);
 
                 console.log('Telemetry Data Ovonovo:', telemetryDataOvonovo);
