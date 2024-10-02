@@ -3,8 +3,6 @@ import { useEffect, useState } from 'react';
 import useLogout from '../scripts/logoutScript';
 import firebaseService from '../firebase/fAuth';
 import loadingGif from '../assets/imagens/loading.gif';
-import HeaderOvonovo from '../components/HeaderOvonovo';
-import HeaderOasis from '../components/HeaderOasis';
 import Card from '../components/Card';
 import getAssetIds from '../scripts/getAssetIds';
 import getDeviceIds from '../scripts/getDeviceIds';
@@ -117,22 +115,19 @@ const MainPage = () => {
 
     return (
         <div className='container-xl'>
-            <div className='header_cards'>
-            <HeaderOvonovo />
+
             <div className='cards_ovonovo'>
                 {upsOvonovoObject.map((unidadeProdutiva, index) => (
                     <Card key={index} unidadeProdutiva={unidadeProdutiva} devicesTelemetry={telemetryDataOvonovo} />
                 ))}            </div>
-                </div>
-                <div className='header_cards'>
-            <HeaderOasis />
+
             <div className='cards_oasis'>
                 {upsOasisObject.map((unidadeProdutiva, index) => (
                     <Card key={index} unidadeProdutiva={unidadeProdutiva} devicesTelemetry={telemetryDataOasis} />
                 ))}            </div>
-                </div>
 
         </div>
+
     );
 }
 

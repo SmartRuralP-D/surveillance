@@ -11,7 +11,7 @@
 .cards_oasis{
     display: flex;
     flex-direction: row;
-    gap: 60px;
+    gap: 70px;
     justify-content: center;
     margin-top: 30px;
 }

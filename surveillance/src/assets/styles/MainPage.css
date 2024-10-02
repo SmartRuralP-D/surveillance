@@ -2,9 +2,3 @@ body{
     background-color: #00695c;
 }
 
-.header_cards{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    
-}
