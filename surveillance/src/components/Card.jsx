@@ -1,20 +1,30 @@
 import poultry from '../assets/imagens/smartrural_poultry_icon.png';
 import iconePeixe from '../assets/imagens/smartrural_fish_icon.png';
 import '../assets/styles/Card.css';
+import { useState } from 'react';
 
 const Card = ( unidadeProdutiva, devicesTelemetry ) => {
-    const nome = unidadeProdutiva.nome;
-    const cultivo = unidadeProdutiva.cultivo;
+    const nome= unidadeProdutiva.length > 0 ? unidadeProdutiva.nome : 'N/A';
+    const cultivo = unidadeProdutiva.length > 0 ? unidadeProdutiva.cultivo : 'N/A';
 
     // parâmetros de telemetria
     console.log(devicesTelemetry);
-    const temperaturas = Object.values(devicesTelemetry[nome]).map(sensor => sensor.data.temperature.value);
-    const humidades = Object.values(devicesTelemetry[nome]).map(sensor => sensor.data.humidity.value);
+    const [temperaturas, setTemperaturas] = useState([]);
+    const humidades = [];
+
+    console.log("valor: ", devicesTelemetry[nome].map(sensor => sensor.data.humidity.value))
+    if (devicesTelemetry[nome] && devicesTelemetry[nome].length > 0) {
+        console.log("valor: ", devicesTelemetry[nome].map(sensor => sensor.data.humidity.value))
+        temperaturas = devicesTelemetry[nome].map(sensor => temperaturas.push(sensor.data.temperature.map(temp => temp.value))); //.temperature.map(temp => temp.value)
+        setTemperaturas(temperaturas)
+        humidades = devicesTelemetry[nome].map(sensor => humidades.push(sensor.data.humidity.value)); 
+    }
+
 
     console.log("temperaturas: ", temperaturas);
     console.log("humidades: ", humidades);
 
-    const oxigenios = Object.values(devicesTelemetry[nome]).map(sensor => sensor.data.oxigenio.value);
+    
 
     const mediaTemperatura = temperaturas.length > 0 ? temperaturas.reduce((acc, temp) => acc + temp, 0) / temperaturas.length : 'N/A';
     const mediaHumidade = humidades.length > 0 ? (humidades.reduce((acc, hum) => acc + hum, 0) / humidades.length).toFixed(3) : 'N/A';

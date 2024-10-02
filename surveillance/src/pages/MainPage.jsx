@@ -116,14 +116,16 @@ const MainPage = () => {
     console.log("telemetryDataOasis", telemetryDataOasis);
     console.log(unidadesProdutivasOvonovo);
 
+    const nomesUnidadesProdutivasOvonovo = unidadesProdutivasOvonovo.map(([assetId, dados]) => dados.nome);
+    console.log("nomesUnidadesProdutivasOvonovo: ", nomesUnidadesProdutivasOvonovo);
+
 
     return (
         <div className='container-xl'>
             <HeaderOvonovo />
             <div>{JSON.stringify(telemetryDataOvonovo)}</div>
-            {unidadesProdutivasOvonovo.map(([assetId, {dados}]) => (
-                <Card key={assetId} unidadeProdutiva={dados} devicesTelemetry={telemetryDataOvonovo} />
-            ))}
+            <Card unidadeProdutiva={unidadesProdutivasOvonovo[0]} devicesTelemetry={telemetryDataOvonovo}/>
+
             <HeaderOasis />
             <div>{JSON.stringify(telemetryDataOasis)}</div>
 
