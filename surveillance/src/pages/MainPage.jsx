@@ -56,7 +56,7 @@ const MainPage = () => {
 
                 const unidadesProdutivasOvonovo = Object.entries(firebaseRootStructure.propriedades[idsPropriedades[0]].unidadesProdutivas);
                 setUnidadesProdutivasOvonovo(unidadesProdutivasOvonovo);
-                
+
 
                 const unidadesProdutivasOasis = Object.entries(firebaseRootStructure.propriedades[idsPropriedades[1]].unidadesProdutivas);
                 setUnidadesProdutivasOasis(unidadesProdutivasOasis);
@@ -67,19 +67,20 @@ const MainPage = () => {
 
 
 
-                const fetchDevicesData = () => {
+                const fetchDevicesData = async () => {
                     //extraindo do tb timeseries data dos sensores(devices)
-                    const telemetryDataOvonovo = getDevicesTelemetry(devicesOvonovo, token);
-                    const telemetryDataOasis = getDevicesTelemetry(devicesOasis, token);
+                    const telemetryDataOvonovo = await getDevicesTelemetry(devicesOvonovo, token);
+                    const telemetryDataOasis = await getDevicesTelemetry(devicesOasis, token);
 
                     setTelemetryDataOvonovo(telemetryDataOvonovo);
                     setTelemetryDataOasis(telemetryDataOasis);
 
-                    console.log('Telemetry Data Ovonovo:', telemetryDataOvonovo);
-                    console.log('Telemetry Data Oasis:', telemetryDataOasis);
                 }
+      
+
                 // Chamar a função de telemetria inicialmente
-                fetchDevicesData();
+                await fetchDevicesData();
+
 
                 const intervalId = setInterval(fetchDevicesData, 120000); // 120 segundos(funcionando)
 
@@ -110,15 +111,22 @@ const MainPage = () => {
     }
     //----------------------
 
-console.log("unidadesProdutivasOvonovo: ", unidadesProdutivasOvonovo);
-console.log("telemetryDataOvonovo",telemetryDataOvonovo);
+    console.log("unidadesProdutivasOvonovo: ", unidadesProdutivasOvonovo);
+    console.log("telemetryDataOvonovo", telemetryDataOvonovo);
+    console.log("telemetryDataOasis", telemetryDataOasis);
+    console.log(unidadesProdutivasOvonovo);
+
 
     return (
         <div className='container-xl'>
             <HeaderOvonovo />
-            {unidadesProdutivasOvonovo.map(unidadeProdutiva => <Card unidadeProdutiva={unidadeProdutiva} devicesTelemetry={telemetryDataOvonovo} />)}
+            <div>{JSON.stringify(telemetryDataOvonovo)}</div>
+            {unidadesProdutivasOvonovo.map(([assetId, {dados}]) => (
+                <Card key={assetId} unidadeProdutiva={dados} devicesTelemetry={telemetryDataOvonovo} />
+            ))}
             <HeaderOasis />
-            
+            <div>{JSON.stringify(telemetryDataOasis)}</div>
+
         </div>
     );
 }

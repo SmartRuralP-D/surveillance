@@ -1,4 +1,4 @@
-const getDevicesTelemetry = (devices, token) => {
+const getDevicesTelemetry = async (devices, token) => {
     const telemetryData = {};
     const fetchTelemetryForDevice = async (deviceId, unidade) => {
         const response = await fetch(`https://thingsboard.cloud/api/plugins/telemetry/DEVICE/${deviceId}/values/timeseries`, {
@@ -20,7 +20,7 @@ const getDevicesTelemetry = (devices, token) => {
             await Promise.all(fetchPromises);
         }
     };
-    fetchAllTelemetryData().catch(console.error);
+    await fetchAllTelemetryData();
     return telemetryData;
 }
 export default getDevicesTelemetry;
