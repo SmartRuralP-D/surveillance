@@ -11,7 +11,7 @@
 .cards_oasis{
     display: flex;
     flex-direction: row;
-    gap: 50px;
+    gap: 60px;
     justify-content: center;
     margin-top: 30px;
 }
@@ -19,7 +19,7 @@
 .cards_ovonovo{
     display: flex;
     flex-direction: row;
-    gap: 50px;
+    gap: 70px;
     justify-content: center;
     margin-top: 30px;
 }
@@ -34,7 +34,7 @@
 }
 
 .header2_card{
-
+    margin-top: 10px;
 }
 
 .imagem{
@@ -58,5 +58,7 @@
 }
 
 p {
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 }
+
+
