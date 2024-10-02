@@ -1,20 +1,38 @@
 .card{
-    max-height: 200px;
-    max-width: 200px;
-}
-.imagem{
-    max-height: 100px;
-    max-width: 100px;
+    max-height: fit-content;
+    max-width: fit-content;
 }
 
-.cards{
+.cards_oasis{
+    max-width: fit-content;
+}
+
+.cards_ovonovo{
     display: flex;
     flex-direction: row;
     gap: 50px;
     justify-content: center;
+    margin-top: 30px;
 }
 
 .card2{
     display: flex;
     flex-direction: column;
+}
+
+.header_card{
+    font-size: 20px;
+}
+
+.header2_card{
+
+}
+
+.imagem{
+    max-height: 100px;
+    max-width: 100px;
+}
+
+.div_imagem{
+  
 }

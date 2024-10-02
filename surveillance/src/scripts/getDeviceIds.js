@@ -3,8 +3,6 @@ const getDeviceIds = (firebaseRootStructure) => {
     let devicesOvonovo = {};
     let devicesOasis = {};
 
-    console.log(Object.values(firebaseRootStructure.propriedades));
-
     Object.values(firebaseRootStructure.propriedades).forEach(propriedade => {
         if (propriedade.nome === 'ovonovo') {
             Object.values(propriedade.unidadesProdutivas).forEach(unidade => {
@@ -17,9 +15,6 @@ const getDeviceIds = (firebaseRootStructure) => {
             });
         }
     });
-
-    console.log('Devices Ovonovo:', devicesOvonovo);
-    console.log('Devices Oasis:', devicesOasis);
     
     return {devicesOvonovo, devicesOasis};
 }

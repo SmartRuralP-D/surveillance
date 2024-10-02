@@ -69,6 +69,7 @@ const MainPage = () => {
 
                 const fetchDevicesData = async () => {
                     //extraindo do tb timeseries data dos sensores(devices)
+                    console.log("Fetching devices data...");
                     const telemetryDataOvonovo = await getDevicesTelemetry(devicesOvonovo, token);
                     const telemetryDataOasis = await getDevicesTelemetry(devicesOasis, token);
 
@@ -76,16 +77,19 @@ const MainPage = () => {
                     setTelemetryDataOasis(telemetryDataOasis);
 
                 }
-      
+
 
                 // Chamar a função de telemetria inicialmente
                 await fetchDevicesData();
 
 
-                const intervalId = setInterval(fetchDevicesData, 120000); // 120 segundos(funcionando)
+                const intervalId = setInterval(fetchDevicesData, 120000); // A cada 120 segundos a função é executada.
 
                 // Limpar intervalo quando o componente for desmontado
-                return () => clearInterval(intervalId);
+                return () => {
+                    clearInterval(intervalId);
+                    console.log("Interval cleared with ID:", intervalId);
+                }
 
             } catch (err) {
                 setError(err.message);
@@ -94,10 +98,11 @@ const MainPage = () => {
         fetchData();
     }, []);
 
-    //----------------------
+    //lista de objetos(unidades produtivas)
+    const upsOvonovoObject = unidadesProdutivasOvonovo.map(([id, objeto]) => objeto);
+    const upsOasisObject = unidadesProdutivasOasis.map(([id, objeto]) => objeto);
 
-    //Tratamento de fetchData
-    //retorna html de erro caso não consiga requisitar os dados
+    //fetchData retorna html de erro caso não consiga requisitar os dados
     if (error) {
         return <div>Erro: {error}</div>;
     }
@@ -109,25 +114,20 @@ const MainPage = () => {
                 <img src={loadingGif} alt='Loading...' className='gif-image' />
             </div>);
     }
-    //----------------------
-
-    console.log("unidadesProdutivasOvonovo: ", unidadesProdutivasOvonovo);
-    console.log("telemetryDataOvonovo", telemetryDataOvonovo);
-    console.log("telemetryDataOasis", telemetryDataOasis);
-    console.log(unidadesProdutivasOvonovo);
-
-    const nomesUnidadesProdutivasOvonovo = unidadesProdutivasOvonovo.map(([assetId, dados]) => dados.nome);
-    console.log("nomesUnidadesProdutivasOvonovo: ", nomesUnidadesProdutivasOvonovo);
-
 
     return (
         <div className='container-xl'>
             <HeaderOvonovo />
-            <div>{JSON.stringify(telemetryDataOvonovo)}</div>
-            <Card unidadeProdutiva={unidadesProdutivasOvonovo[0]} devicesTelemetry={telemetryDataOvonovo}/>
+            <div className='cards_ovonovo'>
+                {upsOvonovoObject.map((unidadeProdutiva, index) => (
+                    <Card key={index} unidadeProdutiva={unidadeProdutiva} devicesTelemetry={telemetryDataOvonovo} />
+                ))}            </div>
 
             <HeaderOasis />
-            <div>{JSON.stringify(telemetryDataOasis)}</div>
+            <div className='cards_oasis'>
+                {upsOasisObject.map((unidadeProdutiva, index) => (
+                    <Card key={index} unidadeProdutiva={unidadeProdutiva} devicesTelemetry={telemetryDataOasis} />
+                ))}            </div>
 
         </div>
     );

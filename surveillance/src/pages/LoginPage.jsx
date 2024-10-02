@@ -18,7 +18,6 @@ function LoginPage() {
         if (user) {
           try {
             const data = await firebaseService.getDatabaseInfo();
-            console.log("Data:", data);
           } catch (error) {
             console.error("Error fetching data:", error);
           }
@@ -34,7 +33,6 @@ function LoginPage() {
       signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
           const user = userCredential.user;
-          console.log("User logged in:", user);
           navigate("/main");
         })
         .catch((error) => {
