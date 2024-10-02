@@ -5,7 +5,7 @@ import '../assets/styles/Header.css';
 
 const HeaderOvonovo = () => {
     return (
-        <div className="horizontal-card">
+        <div className="horizontal-card-ovonovo">
             <img src={iconeGalinhaBranco} style={{height: '100px', width: ''}} alt="logo galinha" className="card-image logosmart"/>
             <h1 className='titulo'>Ovonovo</h1>
             <img src={logoOvonovo} style={{ width: '200px', height: '50px', marginTop: '10px'}} alt="logo ovonovo" className="card-image ovonovo"/>

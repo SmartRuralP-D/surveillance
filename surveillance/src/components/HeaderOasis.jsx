@@ -4,7 +4,7 @@ import '../assets/styles/Header.css';
 
 const HeaderOasis = () => {
     return(
-        <div className='horizontal-card'>
+        <div className='horizontal-card-oasis'>
             <img src={iconePeixeBranco} style={{height: '130px'}} alt='icone peixe branco'/>
             <h1 className='titulo'>Oasis</h1>
             <img src={logoOasis} style={{ width: '180px', height: '70px' }} alt='logo Oasis'/>

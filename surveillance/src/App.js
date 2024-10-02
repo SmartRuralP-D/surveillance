@@ -34,10 +34,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/*Dessa forma fica impossibilitado do usuário voltar pra tela de login, pois a checagem de usuário de /main sempre redireciona pra MainPage. E ele só chega nesse ponto se user não for null. */}
         <Route path='/' element={!user ? <LoginPage /> : <Navigate to='/main' />} />
         <Route path='/main' element={user ? <MainPage /> : <Navigate to='/' />} />
-
+        <Route path='*' element={user ? <MainPage/> : <Navigate to='/'/>}/>
       </Routes>
     </Router>
   );

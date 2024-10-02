@@ -13,7 +13,6 @@ const getThingsBoardJwt = async (firebaseRootStructure) => {
 
     const authResult = await authResponse.json();
     const token = authResult.token;
-    console.log(token);
 
     return token;
 }

@@ -15,8 +15,6 @@ const getAssetIds = (firebaseRootStructure) => {
         });
     });
 
-    console.log('assets ovonovo:', assetsOvonovo);
-    console.log('assets oasis:', assetsOasis);
     return [assetsOvonovo, assetsOasis];
 }
 export default getAssetIds;
