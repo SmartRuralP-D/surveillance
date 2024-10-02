@@ -117,17 +117,20 @@ const MainPage = () => {
 
     return (
         <div className='container-xl'>
+            <div className='header_cards'>
             <HeaderOvonovo />
             <div className='cards_ovonovo'>
                 {upsOvonovoObject.map((unidadeProdutiva, index) => (
                     <Card key={index} unidadeProdutiva={unidadeProdutiva} devicesTelemetry={telemetryDataOvonovo} />
                 ))}            </div>
-
+                </div>
+                <div className='header_cards'>
             <HeaderOasis />
             <div className='cards_oasis'>
                 {upsOasisObject.map((unidadeProdutiva, index) => (
                     <Card key={index} unidadeProdutiva={unidadeProdutiva} devicesTelemetry={telemetryDataOasis} />
                 ))}            </div>
+                </div>
 
         </div>
     );

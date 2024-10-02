@@ -1,10 +1,19 @@
 .card{
     max-height: fit-content;
     max-width: fit-content;
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    background-color: cornflowerblue;
 }
 
 .cards_oasis{
-    max-width: fit-content;
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    justify-content: center;
+    margin-top: 30px;
 }
 
 .cards_ovonovo{
@@ -34,5 +43,20 @@
 }
 
 .div_imagem{
-  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;   
+}
+
+.telemetria{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;  
+}
+
+p {
+    margin-bottom: 5px;
 }
