@@ -1,8 +1,22 @@
-body{
+body {
     background-color: #00695c;
 }
 
-.cards{
+.cards {
     display: flex;
     flex-direction: column;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-top: 8vh;
+}
+
+.card-group {
+    display: flex;
+    flex-direction: row;
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: center;
+    height: fit-content;
 }

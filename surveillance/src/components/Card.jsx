@@ -10,29 +10,33 @@ const Card = ({ unidadeProdutiva, devicesTelemetry }) => {
     const [telemetryValues, setTelemetryValues] = useState({});
 
     useEffect(() => {
-        console.log("devicesTelemetry for ", nome, ": ", devicesTelemetry);
+        console.log("Devices telemetry: ", devicesTelemetry);
         if (devicesTelemetry && devicesTelemetry.length > 0) {
             const newTelemetryValues = {};
-            devicesTelemetry.forEach(sensor => {
-                Object.keys(sensor.data).forEach(key => {
+
+            devicesTelemetry.forEach(device => {
+                Object.keys(device.data).forEach(key => {
                     if (!newTelemetryValues[key]) {
                         newTelemetryValues[key] = [];
                     }
-                    newTelemetryValues[key].push(...sensor.data[key].map(item => item.value));
+                    newTelemetryValues[key].push(...device.data[key].map(entry => parseFloat(entry.value)));
                 });
             });
-            setTelemetryValues(newTelemetryValues);
+
+            const calculatedAverages = {};
+            Object.keys(newTelemetryValues).forEach(key => {
+                const values = newTelemetryValues[key];
+                const average = values.reduce((acc, val) => acc + val, 0) / values.length;
+                calculatedAverages[key] = average.toFixed(3);
+            });
+
+            setTelemetryValues(calculatedAverages);
         }
     }, [unidadeProdutiva, devicesTelemetry]);
 
-    const calcularMedia = (valores) => {
-        const valoresNumericos = valores.map(valor => parseFloat(valor));
-        return valoresNumericos.length > 0 ? (valoresNumericos.reduce((acumulador, valor) => acumulador + valor, 0) / valoresNumericos.length).toFixed(3) : 'N/A';
-    };
-
     const renderTelemetryData = () => {
         return Object.keys(telemetryValues).map(key => (
-            <p key={key}>{key}: {calcularMedia(telemetryValues[key])}</p>
+            <p key={key}>{key}: {telemetryValues[key]}</p>
         ));
     };
 

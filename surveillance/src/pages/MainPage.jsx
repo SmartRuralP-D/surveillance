@@ -17,6 +17,7 @@ const MainPage = () => {
     const [idsAssets, setIdsAssets] = useState({});
     const [idsDevices, setIdsDevices] = useState({});
     const [telemetryData, setTelemetryData] = useState({});
+    const [unidadesTelemetry, setUnidadesTelemetry] = useState({});
 
     useEffect(() => {
         const fetchData = async () => {
@@ -64,6 +65,30 @@ const MainPage = () => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        const fetchUnidadesTelemetry = async () => {
+            const unidadesTelemetry = {};
+            for (const idProp of idsPropriedades) {
+                for (const unidadeProdutiva of Object.values(firebaseDataStructure.propriedades[idProp].unidadesProdutivas)) {
+                    const telemetry = await filterTelemetryData(unidadeProdutiva);
+                    unidadesTelemetry[unidadeProdutiva.nome] = telemetry;
+                }
+            }
+            setUnidadesTelemetry(unidadesTelemetry);
+        };
+
+        if (Object.keys(telemetryData).length > 0) {
+            fetchUnidadesTelemetry();
+        }
+    }, [telemetryData, idsPropriedades, firebaseDataStructure]);
+
+    const filterTelemetryData = async (unidadeProdutiva) => {
+        const unidadesProdutivasFromTelemetryData = Object.values(telemetryData);
+        const unidadesProdutivas = unidadesProdutivasFromTelemetryData.map(unidade => Object.entries(unidade)).flat();
+        const matchedUnidade = unidadesProdutivas.find(([key, value]) => key === unidadeProdutiva.nome);
+        return matchedUnidade ? matchedUnidade[1] : undefined;
+    }
+
     if (error) {
         return <div>Erro: {error}</div>;
     }
@@ -76,32 +101,25 @@ const MainPage = () => {
         );
     }
 
-    console.log("idsPropriedades: ", idsPropriedades);
-    console.log("telemetryData: ", telemetryData);
-
-    const getTelemetryForUnit = (propriedade) => {
-        const dados = [];
-        const propriedadeNome = propriedade.nome;
-        const unidadeNome = propriedade.unidadesProdutivas[idsAssets].nome;
-        const propriedadeTelemetry = telemetryData[propriedadeNome][unidadeNome] || [];
-        return dados.push(propriedadeTelemetry.map(sensor => sensor.data.do_con.map(element => element.value)));
-    };
-
-
-
-    return (
-        <div className='container-xl'>
-            <div className='cards'>
-            {idsPropriedades.map((idProp, index) => (
-                <div key={index} className={`cards_${idProp}`}>
-                    {Object.values(firebaseDataStructure.propriedades[idProp].unidadesProdutivas).map((unidadeProdutiva, index) => (
-                        <Card key={index} unidadeProdutiva={unidadeProdutiva} devicesTelemetry={telemetryData[firebaseDataStructure.propriedades[idProp].nome] || []} />
+    if (!telemetryData || Object.keys(unidadesTelemetry).length === 0) {
+        return (
+            <div style={{ width: '100%', height: '100vh', display: 'flex', justifyContent: "center", alignItems: 'center' }}>
+                <img src={loadingGif} alt='Loading...' className='gif-image' />
+            </div>
+        );
+    } else {
+        return (
+                <div className='cards'>
+                    {idsPropriedades.map((idProp, index) => (
+                        <div key={index} className='card-group'>
+                            {Object.values(firebaseDataStructure.propriedades[idProp].unidadesProdutivas).map((unidadeProdutiva, index) => (
+                                <Card key={index} unidadeProdutiva={unidadeProdutiva} devicesTelemetry={unidadesTelemetry[unidadeProdutiva.nome]} />
+                            ))}
+                        </div>
                     ))}
                 </div>
-            ))}
-            </div>
-        </div>
-    );
+        );
+    }
 }
 
 export default MainPage;
