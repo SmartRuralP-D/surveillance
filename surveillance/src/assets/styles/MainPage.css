@@ -2,3 +2,7 @@ body{
     background-color: #00695c;
 }
 
+.cards{
+    display: flex;
+    flex-direction: column;
+}

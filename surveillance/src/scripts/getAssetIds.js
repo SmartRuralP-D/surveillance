@@ -1,20 +1,15 @@
 const getAssetIds = (firebaseRootStructure) => {
-    // Extraindo asset_ids
-    const assetsOvonovo = [];
-    const assetsOasis = [];
+    const assets = {};
 
     Object.values(firebaseRootStructure.propriedades).forEach(propriedade => {
         const tipo = propriedade.nome;
+        assets[tipo] = [];
 
         Object.keys(propriedade.unidadesProdutivas).forEach(assetId => {
-            if (tipo === 'ovonovo') {
-                assetsOvonovo.push(assetId);
-            } else if (tipo === 'oasis') {
-                assetsOasis.push(assetId);
-            }
+            assets[tipo].push(assetId);
         });
     });
 
-    return [assetsOvonovo, assetsOasis];
+    return assets;
 }
 export default getAssetIds;
